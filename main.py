@@ -23,7 +23,7 @@ pygame.display.set_icon(pygame.image.load("cool.png"))
 
 # Player character
 disp = pygame.display.Info()
-player_img = pygame.image.load("gun.png")
+player_img = pygame.image.load("sport-car.png")
 player_x = disp.current_w * .05
 player_y = disp.current_h * .4
 player_released = False
