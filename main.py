@@ -40,7 +40,6 @@ async def event_loop():
     global running
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            print("Quitting")
             running = False
         elif event.type == pygame.KEYDOWN:
             await keys_down(event.key)
@@ -49,7 +48,8 @@ async def event_loop():
 
 while running:
     asyncio.run(event_loop()) # Call the event loop
-    screen.fill((0, 0, 0))   
+    screen.fill('#7289DA')
     pygame.display.update()
-
-pygame.quit()
+else:
+    print("Quitting")
+    pygame.quit()
