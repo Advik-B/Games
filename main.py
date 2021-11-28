@@ -1,5 +1,7 @@
 import pygame
 import asyncio
+from threading import Thread
+from time import sleep
 from PIL import Image
 
 
@@ -18,21 +20,61 @@ pygame.display.set_caption("<A name for the game>")
 # Set window icon
 pygame.display.set_icon(pygame.image.load("cool.png"))
 
+# Player character
+disp = pygame.display.Info()
+player_img = pygame.image.load("player2.png")
+player_x = disp.current_w * .05
+player_y = disp.current_h * .4
+player_released = False
+def player():
+    global player_img, player_x, player_y
+    screen.blit(player_img, (player_x, player_y))
+
+# Main loop
 running = True
 
 # Key press functions
 
-async def keys_down(key):
-    global running
+def keys_down(key):
+    global running, player_x, player_y, player_released
     if key == pygame.K_ESCAPE:
         print("Escape key pressed")
         running = False
+    if key == pygame.K_UP:
+        print("Up key pressed")
+        while player_released is False:
+            player_y -= 10
+            sleep(.03)
+        else:
+            player_released = False
+ 
+        
+    if key == pygame.K_DOWN:
+        print("Down key pressed")
+        while player_released is False:
+            player_y += 10
+            sleep(.03)
+        else:
+            player_released = False
+            
+    exit(0)
 
-async def keys_up(key):
-    global running
+
+def keys_up(key):
+    global running, player_x, player_y, player_released
     if key == pygame.K_ESCAPE:
         running = False
         print("Escape key released")
+ 
+    if key == pygame.K_UP:
+        print("Up key realesed")
+        player_released = True
+
+    if key == pygame.K_DOWN:
+        print("Down key released")
+        player_released  = True
+
+    exit(0)
 
 # Event loop
 
@@ -42,14 +84,17 @@ async def event_loop():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            await keys_down(event.key)
+            t = Thread(target=keys_down, args=(event.key,))
+            t.start()
         elif event.type == pygame.KEYUP:
-            await keys_up(event.key)
+            t = Thread(target=keys_up, args=(event.key,))
+            t.start()
 
 while running:
     asyncio.run(event_loop()) # Call the event loop
     screen.fill('#7289DA')
+    player()
     pygame.display.update()
 else:
-    print("Quitting")
+    print("Quitting Game")
     pygame.quit()
