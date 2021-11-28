@@ -1,4 +1,5 @@
 import pygame
+import asyncio
 from PIL import Image
 
 
@@ -19,21 +20,36 @@ pygame.display.set_icon(pygame.image.load("cool.png"))
 
 running = True
 
-def keys(key):
+# Key press functions
+
+async def keys_down(key):
+    global running
+    if key == pygame.K_ESCAPE:
+        print("Escape key pressed")
+        running = False
+
+async def keys_up(key):
     global running
     if key == pygame.K_ESCAPE:
         running = False
-    
+        print("Escape key released")
 
-def event_loop():
+# Event loop
+
+async def event_loop():
     global running
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            print("Quitting")
             running = False
         elif event.type == pygame.KEYDOWN:
-            keys(event.key)
+            await keys_down(event.key)
+        elif event.type == pygame.KEYUP:
+            await keys_up(event.key)
 
 while running:
-    event_loop() # Call the event loop
+    asyncio.run(event_loop()) # Call the event loop
+    screen.fill((0, 0, 0))   
+    pygame.display.update()
 
 pygame.quit()
