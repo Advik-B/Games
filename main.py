@@ -2,7 +2,8 @@ import pygame
 import asyncio
 from threading import Thread
 from time import sleep
-from PIL import Image
+from sys import exit as close
+# from PIL import Image
 
 
 pygame.init()
@@ -22,10 +23,11 @@ pygame.display.set_icon(pygame.image.load("cool.png"))
 
 # Player character
 disp = pygame.display.Info()
-player_img = pygame.image.load("player2.png")
+player_img = pygame.image.load("gun.png")
 player_x = disp.current_w * .05
 player_y = disp.current_h * .4
 player_released = False
+
 def player():
     global player_img, player_x, player_y
     screen.blit(player_img, (player_x, player_y))
@@ -56,8 +58,8 @@ def keys_down(key):
             sleep(.03)
         else:
             player_released = False
-            
-    exit(0)
+
+    close(0)
 
 
 def keys_up(key):
@@ -74,7 +76,7 @@ def keys_up(key):
         print("Down key released")
         player_released  = True
 
-    exit(0)
+    close(0)
 
 # Event loop
 
@@ -85,9 +87,11 @@ async def event_loop():
             running = False
         elif event.type == pygame.KEYDOWN:
             t = Thread(target=keys_down, args=(event.key,))
+            t.daemon = True  # thread dies when main thread exits.
             t.start()
         elif event.type == pygame.KEYUP:
             t = Thread(target=keys_up, args=(event.key,))
+            t.daemon = True  # thread dies when main thread exits.
             t.start()
 
 while running:
@@ -98,3 +102,4 @@ while running:
 else:
     print("Quitting Game")
     pygame.quit()
+    close(0)
