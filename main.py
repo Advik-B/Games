@@ -32,13 +32,39 @@ def player():
     global player_img, player_x, player_y
     screen.blit(player_img, (player_x, player_y))
 
+# Bullet
+bullet_img = pygame.image.load("bullet.png")
+bullet_x = player_x + player_img.get_width() * 2 * .51
+bullet_y = player_y * .985
+bullet_ready = True
+bullet_x_change = 10
+
+def __fire_bullet():
+    
+    while True:
+        global bullet_x, bullet_y, bullet_x_change, disp
+        def step():
+            global bullet_x, bullet_y, bullet_x_change, disp
+            if bullet_x > disp.current_w:
+                bullet_y += bullet_x_change
+                bullet_x -= bullet_x_change
+            else:
+                bullet_x += bullet_x_change
+        step()
+        sleep(.01)
+
+def fire_bullet():
+    t = Thread(target=__fire_bullet)
+    t.daemon = True  # thread dies when main thread exits.
+    t.start()
+
 # Main loop
 running = True
 
 # Key press functions
 
 def keys_down(key):
-    global running, player_x, player_y, player_released
+    global running, player_x, player_y, player_released, bullet_ready
     if key == pygame.K_ESCAPE:
         print("Escape key pressed")
         running = False
@@ -49,8 +75,6 @@ def keys_down(key):
             sleep(.03)
         else:
             player_released = False
- 
-        
     if key == pygame.K_DOWN:
         print("Down key pressed")
         while player_released is False:
@@ -58,6 +82,15 @@ def keys_down(key):
             sleep(.03)
         else:
             player_released = False
+    
+    if key == pygame.K_SPACE:
+        print("Space key pressed")
+        if bullet_ready:
+            bullet_ready = False
+            fire_bullet()
+            sleep(.5)
+            bullet_ready = True
+            
 
     close(0)
 
@@ -98,6 +131,7 @@ while running:
     asyncio.run(event_loop()) # Call the event loop
     screen.fill('#7289DA')
     player()
+    screen.blit(bullet_img, (bullet_x, bullet_y))
     pygame.display.update()
 else:
     print("Quitting Game")
